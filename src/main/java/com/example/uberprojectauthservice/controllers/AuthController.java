@@ -6,6 +6,7 @@ import com.example.uberprojectauthservice.dto.PassengerDto;
 import com.example.uberprojectauthservice.dto.PassengerSignupRequestDto;
 import com.example.uberprojectauthservice.services.AuthService;
 import com.example.uberprojectauthservice.services.JwtService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,15 @@ public class AuthController {
     public ResponseEntity<PassengerDto> signUp(@RequestBody PassengerSignupRequestDto passengerSignupRequestDto) {
         PassengerDto response = authService.signupPassenger(passengerSignupRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/signin/validate")
+    public void validate(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            System.out.println(cookie.getName());
+            System.out.println(cookie.getValue());
+        }
     }
 
     @PostMapping("/signin/passenger")
