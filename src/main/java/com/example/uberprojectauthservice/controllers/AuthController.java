@@ -55,14 +55,14 @@ public class AuthController {
     }
 
     @PostMapping("/signin/passenger")
-    public ResponseEntity<?> signIn(@RequestBody AuthRequestDto authRequestDto, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> signIn(@RequestBody AuthRequestDto authRequestDto, HttpServletResponse response) {
         System.out.println("Request received " + authRequestDto.getEmail() + " " + authRequestDto.getPassword());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDto.getEmail(), authRequestDto.getPassword()));
         if(authentication.isAuthenticated()) {
             String jwtToken = jwtService.createToken(authRequestDto.getEmail());
 
             ResponseCookie cookie = ResponseCookie.from("JwtToken", jwtToken)
-                            .httpOnly(false)
+                            .httpOnly(true)
                             .secure(false)
                             .path("/")
                             .maxAge(7*24*3600)
@@ -73,6 +73,15 @@ public class AuthController {
         } else {
             throw new UsernameNotFoundException("User not found");
         }
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validate(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("Inside validate controller");
+        for(Cookie cookie: request.getCookies()) {
+            System.out.println(cookie.getName() + " " + cookie.getValue());
+        }
+        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
     // write a new /validate api that atleast fetches the jwt token
